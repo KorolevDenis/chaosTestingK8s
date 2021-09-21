@@ -1,0 +1,13 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: DNSChaos
+metadata:
+  name: dns-chaos-chaosmesh
+spec:
+  action: error
+  patterns:
+    - google.com
+  mode: one
+  selector:
+    labelSelectors:
+      "app": "nginx"
+  duration: '60000s'
