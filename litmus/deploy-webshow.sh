@@ -56,12 +56,12 @@ esac
 done
 
 if [ ${DELETE_APP} == "true" ]; then
-    kubectl delete deployments web-show
-    kubectl delete service web-show
+    microk8s kubectl delete deployments web-show
+    microk8s kubectl delete service web-show
     exit 0
 fi
 
-TARGET_IP=$(kubectl get pod -n kube-system -o wide| grep kube-controller | head -n 1 | awk '{print $6}')
+TARGET_IP=$(microk8s kubectl get pod -n kube-system -o wide| grep kube-controller | head -n 1 | awk '{print $6}')
 
 if [ ${DOCKER_MIRROR} == "true" ]; then
     docker pull dockerhub.azk8s.cn/pingcap/web-show || true
@@ -69,7 +69,7 @@ if [ ${DOCKER_MIRROR} == "true" ]; then
     kind load docker-image pingcap/web-show > /dev/null 2>&1 || true
 fi
 
-cat <<EOF | kubectl apply -f -
+cat <<EOF | microk8s kubectl apply -f -
 apiVersion: v1
 kind: Service
 metadata:
@@ -84,10 +84,9 @@ spec:
     - protocol: TCP
       port: 8082
       targetPort: 8082
-  type: LoadBalancer
 EOF
 
-cat <<EOF | kubectl apply -f -
+cat <<EOF | microk8s kubectl apply -f -
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -118,8 +117,8 @@ spec:
               hostPort: 8082
 EOF
 
-while [[ $(kubectl get pods -l app=web-show -o 'jsonpath={..status.conditions[?(@.type=="Ready")].status}') != "True" ]]; do echo "Waiting for pod running" && sleep 10; done
+while [[ $(microk8s kubectl get pods -l app=web-show -o 'jsonpath={..status.conditions[?(@.type=="Ready")].status}') != "True" ]]; do echo "Waiting for pod running" && sleep 10; done
 
 kill $(lsof -t -i:8081) >/dev/null 2>&1 || true
 
-nohup kubectl port-forward --address 0.0.0.0 svc/web-show 8081:8081 >/dev/null 2>&1 &
+nohup microk8s kubectl port-forward --address 0.0.0.0 svc/web-show 8081:8081 >/dev/null 2>&1 &

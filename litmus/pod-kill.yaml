@@ -20,4 +20,4 @@ spec:
         - name: FORCE
           value: 'true'
         - name: TOTAL_CHAOS_DURATION
-          value: '60'
+          value: '120'

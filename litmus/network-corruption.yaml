@@ -3,20 +3,20 @@ kind: ChaosEngine
 metadata:
   name: engine-nginx
 spec:
-  engineState: "active"
-  annotationCheck: "false"
-  jobCleanUpPolicy: "delete"
+  jobCleanUpPolicy: 'delete'
   appinfo:
     appns: "litmus"
     applabel: "app=nginx"
     appkind: "deployment"
-  chaosServiceAccount: pod-network-latency-sa
+  chaosServiceAccount: pod-network-corruption-sa
   experiments:
-  - name: pod-network-loss
+  - name: pod-network-corruption
     spec:
       components:
         env:
+        - name: NETWORK_INTERFACE
+          value: "eth0"
         - name: NETWORK_PACKET_CORRUPTION_PERCENTAGE
           value: '100' #in percentage
         - name: TOTAL_CHAOS_DURATION
-          value: '60'
+          value: '600'

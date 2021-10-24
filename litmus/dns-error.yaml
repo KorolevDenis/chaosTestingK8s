@@ -4,13 +4,13 @@ kind: ChaosEngine
 metadata:
   name: pod-dns
 spec:
-  engineState: "active"
-  annotationCheck: "false"
   appinfo:
     appns: "litmus"
-    applabel: "app=nginx"
-    appkind: "deployment"
+    applabel: 'app=nginx'
+    appkind: deployment
   chaosServiceAccount: dns-error-sa
+  monitoring: false
+  jobCleanUpPolicy: delete
   experiments:
   - name: pod-dns-error
     spec:
@@ -21,4 +21,4 @@ spec:
         - name: TARGET_HOSTNAMES
           value: '["litmuschaos", "google.com"]'
         - name: TOTAL_CHAOS_DURATION
-          value: '600000'
+          value: "36600"
